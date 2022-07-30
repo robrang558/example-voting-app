@@ -11,16 +11,16 @@ class Worker {
       Jedis redis = connectToRedis("redis");
       Connection dbConn = connectToDB("db");
 
-      System.err.println("Watching vote queue");
+      System.err.println("Watching result queue");
 
       while (true) {
-        String voteJSON = redis.blpop(0, "votes").get(1);
-        JSONObject voteData = new JSONObject(voteJSON);
-        String voterID = voteData.getString("voter_id");
-        String vote = voteData.getString("vote");
+        String resultJSON = redis.blpop(0, "results").get(1);
+        JSONObject resultData = new JSONObject(resultJSON);
+        String resultrID = resultData.getString("resultr_id");
+        String result = resultData.getString("result");
 
-        System.err.printf("Processing vote for '%s' by '%s'\n", vote, voterID);
-        updateVote(dbConn, voterID, vote);
+        System.err.printf("Processing result for '%s' by '%s'\n", result, resultrID);
+        updateresult(dbConn, resultrID, result);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -28,19 +28,19 @@ class Worker {
     }
   }
 
-  static void updateVote(Connection dbConn, String voterID, String vote) throws SQLException {
+  static void updateresult(Connection dbConn, String resultrID, String result) throws SQLException {
     PreparedStatement insert = dbConn.prepareStatement(
-      "INSERT INTO votes (id, vote) VALUES (?, ?)");
-    insert.setString(1, voterID);
-    insert.setString(2, vote);
+      "INSERT INTO results (id, result) VALUES (?, ?)");
+    insert.setString(1, resultrID);
+    insert.setString(2, result);
 
     try {
       insert.executeUpdate();
     } catch (SQLException e) {
       PreparedStatement update = dbConn.prepareStatement(
-        "UPDATE votes SET vote = ? WHERE id = ?");
-      update.setString(1, vote);
-      update.setString(2, voterID);
+        "UPDATE results SET result = ? WHERE id = ?");
+      update.setString(1, result);
+      update.setString(2, resultrID);
       update.executeUpdate();
     }
   }
@@ -80,7 +80,7 @@ class Worker {
       }
 
       PreparedStatement st = conn.prepareStatement(
-        "CREATE TABLE IF NOT EXISTS votes (id VARCHAR(255) NOT NULL UNIQUE, vote VARCHAR(255) NOT NULL)");
+        "CREATE TABLE IF NOT EXISTS results (id VARCHAR(255) NOT NULL UNIQUE, result VARCHAR(255) NOT NULL)");
       st.executeUpdate();
 
     } catch (ClassNotFoundException e) {

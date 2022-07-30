@@ -3,7 +3,7 @@ from flask import url_for
 import unittest
 
 
-class VoteUnitTest(unittest.TestCase):
+class resultUnitTest(unittest.TestCase):
 
     def setUp(self):
         """Unit Test Setup"""
