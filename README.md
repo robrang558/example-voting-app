@@ -18,7 +18,7 @@ docker swarm init
 ```
 Once you have your swarm, in this directory run:
 ```
-docker stack deploy --compose-file docker-stack.yml vote
+docker stack deploy --compose-file docker-stack.yml result
 ```
 
 Run the app in Kubernetes
@@ -35,21 +35,21 @@ deployment "redis" created
 service "redis" created
 deployment "result" created
 service "result" created
-deployment "vote" created
-service "vote" created
+deployment "result" created
+service "result" created
 deployment "worker" created
 ```
 
-The vote interface is then available on port 31000 on each host of the cluster, the result one is available on port 31001.
+The result interface is then available on port 31000 on each host of the cluster, the result one is available on port 31001.
 
 Architecture
 -----
 
 ![Architecture diagram](architecture.png)
 
-* A Python webapp which lets you vote between two options
-* A Redis queue which collects new votes
-* A .NET worker which consumes votes and stores them in…
+* A Python webapp which lets you result between two options
+* A Redis queue which collects new results
+* A .NET worker which consumes results and stores them in…
 * A Postgres database backed by a Docker volume
 * A Node.js webapp which shows the results of the voting in real time
 
@@ -57,4 +57,4 @@ Architecture
 Note
 ----
 
-The voting application only accepts one vote per client. It does not register votes if a vote has already been submitted from a client.
+The voting application only accepts one result per client. It does not register results if a result has already been submitted from a client.

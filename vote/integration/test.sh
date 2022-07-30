@@ -1,17 +1,17 @@
 #!/bin/sh
 
-echo "I: Checking if frontend vote app is available..."
+echo "I: Checking if frontend result app is available..."
 
-curl  http://vote > /dev/null 2>&1
+curl  http://result > /dev/null 2>&1
 
 if [ $? -eq 0 ]
 then
   echo "---------------------------------------"
-  echo "Vote app is available....proceeding"
+  echo "result app is available....proceeding"
   echo "---------------------------------------"
 else
   echo "---------------------------------------"
-  echo "Vote app is not avilable....aborting"
+  echo "result app is not avilable....aborting"
   echo "---------------------------------------"
   exit 2
 fi
@@ -19,10 +19,10 @@ fi
 
 echo "I: Launching integration test..."
 
-# submit a vote. Will return an error if it fails to submit or store vote in redis
+# submit a result. Will return an error if it fails to submit or store result in redis
 # Fail integration test if  it returns exit code 0 (error state)
 
-curl -sS -X POST --data "vote=b" http://vote | grep -i erro
+curl -sS -X POST --data "result=b" http://result | grep -i erro
 
 if [ $? -eq 0 ]
 then

@@ -25,7 +25,7 @@ namespace Worker
                 var keepAliveCommand = pgsql.CreateCommand();
                 keepAliveCommand.CommandText = "SELECT 1";
 
-                var definition = new { vote = "", voter_id = "" };
+                var definition = new { result = "", resultr_id = "" };
                 while (true)
                 {
                     // Slow down to prevent CPU spike, only query each 100ms
@@ -37,11 +37,11 @@ namespace Worker
                         redisConn = OpenRedisConnection("redis");
                         redis = redisConn.GetDatabase();
                     }
-                    string json = redis.ListLeftPopAsync("votes").Result;
+                    string json = redis.ListLeftPopAsync("results").Result;
                     if (json != null)
                     {
-                        var vote = JsonConvert.DeserializeAnonymousType(json, definition);
-                        Console.WriteLine($"Processing vote for '{vote.vote}' by '{vote.voter_id}'");
+                        var result = JsonConvert.DeserializeAnonymousType(json, definition);
+                        Console.WriteLine($"Processing result for '{result.result}' by '{result.resultr_id}'");
                         // Reconnect DB if down
                         if (!pgsql.State.Equals(System.Data.ConnectionState.Open))
                         {
@@ -49,8 +49,8 @@ namespace Worker
                             pgsql = OpenDbConnection("Server=db;Username=postgres;");
                         }
                         else
-                        { // Normal +1 vote requested
-                            UpdateVote(pgsql, vote.voter_id, vote.vote);
+                        { // Normal +1 result requested
+                            Updateresult(pgsql, result.resultr_id, result.result);
                         }
                     }
                     else
@@ -93,9 +93,9 @@ namespace Worker
             Console.Error.WriteLine("Connected to db");
 
             var command = connection.CreateCommand();
-            command.CommandText = @"CREATE TABLE IF NOT EXISTS votes (
+            command.CommandText = @"CREATE TABLE IF NOT EXISTS results (
                                         id VARCHAR(255) NOT NULL UNIQUE,
-                                        vote VARCHAR(255) NOT NULL
+                                        result VARCHAR(255) NOT NULL
                                     )";
             command.ExecuteNonQuery();
 
@@ -130,19 +130,19 @@ namespace Worker
                 .First(a => a.AddressFamily == AddressFamily.InterNetwork)
                 .ToString();
 
-        private static void UpdateVote(NpgsqlConnection connection, string voterId, string vote)
+        private static void Updateresult(NpgsqlConnection connection, string resultrId, string result)
         {
             var command = connection.CreateCommand();
             try
             {
-                command.CommandText = "INSERT INTO votes (id, vote) VALUES (@id, @vote)";
-                command.Parameters.AddWithValue("@id", voterId);
-                command.Parameters.AddWithValue("@vote", vote);
+                command.CommandText = "INSERT INTO results (id, result) VALUES (@id, @result)";
+                command.Parameters.AddWithValue("@id", resultrId);
+                command.Parameters.AddWithValue("@result", result);
                 command.ExecuteNonQuery();
             }
             catch (DbException)
             {
-                command.CommandText = "UPDATE votes SET vote = @vote WHERE id = @id";
+                command.CommandText = "UPDATE results SET result = @result WHERE id = @id";
                 command.ExecuteNonQuery();
             }
             finally

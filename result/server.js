@@ -37,31 +37,31 @@ async.retry(
       return console.error("Giving up");
     }
     console.log("Connected to db");
-    getVotes(client);
+    getresults(client);
   }
 );
 
-function getVotes(client) {
-  client.query('SELECT vote, COUNT(id) AS count FROM votes GROUP BY vote', [], function(err, result) {
+function getresults(client) {
+  client.query('SELECT result, COUNT(id) AS count FROM results GROUP BY result', [], function(err, result) {
     if (err) {
       console.error("Error performing query: " + err);
     } else {
-      var votes = collectVotesFromResult(result);
-      io.sockets.emit("scores", JSON.stringify(votes));
+      var results = collectresultsFromResult(result);
+      io.sockets.emit("scores", JSON.stringify(results));
     }
 
-    setTimeout(function() {getVotes(client) }, 1000);
+    setTimeout(function() {getresults(client) }, 1000);
   });
 }
 
-function collectVotesFromResult(result) {
-  var votes = {a: 0, b: 0};
+function collectresultsFromResult(result) {
+  var results = {a: 0, b: 0};
 
   result.rows.forEach(function (row) {
-    votes[row.vote] = parseInt(row.count);
+    results[row.result] = parseInt(row.count);
   });
 
-  return votes;
+  return results;
 }
 
 app.use(cookieParser());

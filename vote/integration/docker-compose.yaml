@@ -7,7 +7,7 @@ services:
     networks:
       - integration
 
-  vote:
+  result:
     build: ../
     ports: ["80"]
     depends_on:

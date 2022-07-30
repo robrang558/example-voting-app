@@ -5,7 +5,7 @@ services:
   e2e:
     build: ./tests/
     depends_on:
-      - vote
+      - result
       - result
       - worker
       - db
@@ -13,8 +13,8 @@ services:
     networks:
       - front-tier
 
-  vote:
-    image: ${VOTE_IMAGE}
+  result:
+    image: ${result_IMAGE}
     ports: ["80"]
     depends_on:
       - redis

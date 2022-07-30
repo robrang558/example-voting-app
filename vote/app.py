@@ -19,27 +19,27 @@ def get_redis():
 
 @app.route("/", methods=['POST','GET'])
 def hello():
-    voter_id = request.cookies.get('voter_id')
-    if not voter_id:
-        voter_id = hex(random.getrandbits(64))[2:-1]
+    resultr_id = request.cookies.get('resultr_id')
+    if not resultr_id:
+        resultr_id = hex(random.getrandbits(64))[2:-1]
 
-    vote = None
+    result = None
 
     if request.method == 'POST':
         redis = get_redis()
-        vote = request.form['vote']
-        data = json.dumps({'voter_id': voter_id, 'vote': vote})
-        redis.rpush('votes', data)
+        result = request.form['result']
+        data = json.dumps({'resultr_id': resultr_id, 'result': result})
+        redis.rpush('results', data)
 
     resp = make_response(render_template(
         'index.html',
         option_a=option_a,
         option_b=option_b,
         hostname=hostname,
-        vote=vote,
+        result=result,
         version=version,
     ))
-    resp.set_cookie('voter_id', voter_id)
+    resp.set_cookie('resultr_id', resultr_id)
     return resp
 
 
