@@ -1,5 +1,5 @@
 # Using official python runtime base image
-FROM schoolofdevops/resultapp-python:v0.1.0
+FROM python:3
 
 # Set the application directory
 WORKDIR /app
