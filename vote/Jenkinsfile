@@ -65,6 +65,5 @@ pipeline{
         success{
           slackSend (channel: "learn-cicd", message: "Build Succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER}")
         }
-        }
     }
 }
